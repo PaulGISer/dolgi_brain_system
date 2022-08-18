@@ -37,7 +37,7 @@ int green_score; // счет зеленого игрока
 int blue_score; // счет синего игрока
 
 
-bool game_started;
+bool game_started; // булева переменная, запущен ли таймер
 
 unsigned long print_time;
 unsigned long game_start_time;
