@@ -31,10 +31,10 @@ bool blue_pressable = true;
 int game = 1;
 int buttons_order = 1; // порядок отбивки в свояке
 
-int red_score;
-int yellow_score;
-int green_score;
-int blue_score;
+int red_score; //счет красного игрока
+int yellow_score; // счет желтого игрока
+int green_score; // счет зеленого игрока
+int blue_score; // счет синего игрока
 
 
 bool game_started;
