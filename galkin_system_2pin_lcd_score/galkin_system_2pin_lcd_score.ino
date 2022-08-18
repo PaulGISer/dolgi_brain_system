@@ -1,5 +1,5 @@
 #include <Wire.h>
-//#include <EEPROM.h>
+#include <EEPROM.h>
 #include <LiquidCrystal_I2C.h>
 
 #define RED_BUTTON 2
@@ -50,11 +50,10 @@ bool blue_pressable = true;
 int game = 1;
 int buttons_order = 1; // порядок отбивки в свояке
 
-int red_score; //счет красного игрока
-int yellow_score; // счет желтого игрока
-int green_score; // счет зеленого игрока
-int blue_score; // счет синего игрока
-
+int red_score = 0; //счет красного игрока
+int yellow_score = 0; // счет желтого игрока
+int green_score = 0; // счет зеленого игрока
+int blue_score = 0; // счет синего игрока
 
 bool game_started; // булева переменная, запущен ли таймер
 
@@ -75,6 +74,25 @@ float time_remaind;
 float current_time;
 
 void write_score(){
+  lcd.home();
+  lcd.clear();
+  lcd.print("K:");
+  lcd.setCursor(3,0);
+  lcd.print(red_score);
+  lcd.setCursor(8,0);
+  lcd.print(char(6));
+  lcd.print(":");
+  lcd.setCursor(11,0);
+  lcd.print(yellow_score);
+  lcd.setCursor(0,1);
+  lcd.print(char(7));
+  lcd.print(":");
+  lcd.setCursor(3,1);
+  lcd.print(green_score);
+  lcd.setCursor(8,1);
+  lcd.print("C:");
+  lcd.setCursor(11,1);
+  lcd.print(blue_score);
   
 }
 
@@ -171,6 +189,7 @@ blue_pressable = true;
         lcd.setCursor(11,0);
         lcd.print(time_remaind);
       }
+      write_score(); // вывод счета на экран
 }
 
 void choose_game(){
@@ -237,7 +256,7 @@ void choose_game(){
         delay(500);
         train_start_delay = random(5000, 15000);
       }
-     //EEPROM.update(1,game);
+     EEPROM.update(1,game);
 }
 
 void create_chars_set(){
@@ -309,7 +328,7 @@ lcd.print("PAEM?");
 
 delay(2000);
 game = 1;
-//game = EEPROM.read(1);
+game = EEPROM.read(1);
 choose_game();
 
 }
