@@ -2,25 +2,6 @@
 //#include <EEPROM.h>
 #include <LiquidCrystal_I2C.h>
 
-#define RED_BUTTON 2
-#define YELLOW_BUTTON 3
-#define GREEN_BUTTON 4
-#define BLUE_BUTTON 5
-
-#define RED_SIGNAL_LED 6
-#define YELLOW_SIGNAL_LED 7
-#define GREEN_SIGNAL_LED 8
-#define BLUE_SIGNAL_LED 9
-
-#define BUZZER 10
-
-#define FALSE_START_LED A0
-#define NO_FALSE_START_LED A1
-
-#define GAME_START_BUTTON A2
-#define GAME_STOP_BUTTON A3
-#define GAME_CANCEL_BUTTON 13
-
 byte bukva_B[8]   = {B11110,B10000,B10000,B11110,B10001,B10001,B11110,B00000,}; // Буква "Б"
 byte bukva_G[8]   = {B11111,B10001,B10000,B10000,B10000,B10000,B10000,B00000,}; // Буква "Г"
 byte bukva_D[8]   = {B01111,B00101,B00101,B01001,B10001,B11111,B10001,B00000,}; // Буква "Д"
@@ -80,20 +61,20 @@ void write_score(){
 
 void system_reset(){
 
-digitalWrite(RED_BUTTON, LOW);
-digitalWrite(YELLOW_BUTTON, LOW);
-digitalWrite(GREEN_BUTTON, LOW);
-digitalWrite(BLUE_BUTTON, LOW);
+digitalWrite(2, LOW);
+digitalWrite(3, LOW);
+digitalWrite(4, LOW);
+digitalWrite(5, LOW);
 
-pinMode(RED_BUTTON, INPUT);
-pinMode(YELLOW_BUTTON, INPUT);
-pinMode(GREEN_BUTTON, INPUT);
-pinMode(BLUE_BUTTON, INPUT);
+pinMode(2, INPUT);
+pinMode(3, INPUT);
+pinMode(4, INPUT);
+pinMode(5, INPUT);
 
-digitalWrite(RED_SIGNAL_LED, HIGH);
-digitalWrite(YELLOW_SIGNAL_LED, HIGH);
-digitalWrite(GREEN_SIGNAL_LED, HIGH);
-digitalWrite(BLUE_SIGNAL_LED, HIGH);
+digitalWrite(6, HIGH);
+digitalWrite(7, HIGH);
+digitalWrite(8, HIGH);
+digitalWrite(9, HIGH);
 
 red_pressable = true;
 yellow_pressable = true;
@@ -106,8 +87,8 @@ blue_pressable = true;
         lcd.print("PE");
         lcd.print(char(4));
         lcd.print("H"); 
-        digitalWrite(FALSE_START_LED, LOW);
-        digitalWrite(NO_FALSE_START_LED, LOW);
+        digitalWrite(A0, LOW);
+        digitalWrite(A1, LOW);
 
         game_started = false;
         start_button_pressed = false;
@@ -162,8 +143,8 @@ blue_pressable = true;
         start_button_pressed = true;
         game_started = false;
         time_remaind = 60.00;
-        digitalWrite(FALSE_START_LED, LOW);
-        digitalWrite(NO_FALSE_START_LED, LOW);
+        digitalWrite(A0, LOW);
+        digitalWrite(A1, LOW);
         lcd.clear();
         lcd.print("TPEH");
         lcd.print(char(0));
@@ -263,34 +244,37 @@ void create_brain_chars_set(){
 }
 
 void setup() {
-  
+  // put your setup code here, to run once:
+
+
+
 // кнопки игроков
-pinMode(RED_BUTTON, INPUT);
-pinMode(YELLOW_BUTTON,INPUT);
-pinMode(GREEN_BUTTON,INPUT);
-pinMode(BLUE_BUTTON,INPUT);
+pinMode(2, INPUT);
+pinMode(3,INPUT);
+pinMode(4,INPUT);
+pinMode(5,INPUT);
 
 // сигнальные лампы
-pinMode(RED_SIGNAL_LED,OUTPUT); 
-pinMode(YELLOW_SIGNAL_LED,OUTPUT);
-pinMode(GREEN_SIGNAL_LED,OUTPUT);
-pinMode(BLUE_SIGNAL_LED,OUTPUT);
+pinMode(6,OUTPUT); 
+pinMode(7,OUTPUT);
+pinMode(8,OUTPUT);
+pinMode(9,OUTPUT);
 
 // динамик
-pinMode(BUZZER, OUTPUT);
+pinMode(10, OUTPUT);
 
 // лампы фальстарта
-pinMode(FALSE_START_LED,OUTPUT);
-pinMode(NO_FALSE_START_LED,OUTPUT);
+pinMode(A0,OUTPUT);
+pinMode(A1,OUTPUT);
 
 // кнопки ведущего
-pinMode(GAME_START_BUTTON, INPUT_PULLUP);
-pinMode(GAME_STOP_BUTTON, INPUT_PULLUP);
+pinMode(A2, INPUT_PULLUP);
+pinMode(A3, INPUT_PULLUP);
 
-digitalWrite(RED_SIGNAL_LED, HIGH);
-digitalWrite(YELLOW_SIGNAL_LED, HIGH);
-digitalWrite(GREEN_SIGNAL_LED, HIGH);
-digitalWrite(BLUE_SIGNAL_LED, HIGH);
+digitalWrite(6, HIGH);
+digitalWrite(7, HIGH);
+digitalWrite(8, HIGH);
+digitalWrite(9, HIGH);
 
 lcd.init();
 lcd.backlight();
@@ -317,9 +301,9 @@ choose_game();
 void loop() {
   
   // выбор режима игры
-  if (digitalRead(GAME_START_BUTTON) == LOW && digitalRead(GAME_STOP_BUTTON)==LOW){ 
+  if (digitalRead(A2) == LOW && digitalRead(A3)==LOW){ 
     long game_set_moment = millis();
-  while (digitalRead(GAME_START_BUTTON) == LOW && digitalRead(GAME_STOP_BUTTON)==LOW){   
+  while (digitalRead(A2) == LOW && digitalRead(A3)==LOW){   
       
     if (millis() - game_set_moment > 2000){
       game += 1;
@@ -336,7 +320,7 @@ void loop() {
 // БРЕЙН-РИНГ
   if (game == 1){
     // старт таймера
-    if (digitalRead(GAME_START_BUTTON) == LOW){
+    if (digitalRead(A2) == LOW){
       game_start_delay = random(500, 1500);     // случайная задержка звукового сигнала, чтобы игроки не могли реагировать на щелчок кнопки
       start_button_press_moment = millis();      
       start_button_pressed = true;
@@ -385,27 +369,27 @@ void loop() {
     }
 
     // сброс системы во время работы таймера
-    if (digitalRead(GAME_STOP_BUTTON) == LOW && game_started){
+    if (digitalRead(A3) == LOW && game_started){
       game_started = false;
       system_reset();
     }
 
     // красная кнопка
-      if (digitalRead(RED_BUTTON) == HIGH && red_pressable){
+      if (digitalRead(2) == HIGH && red_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
       
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(RED_BUTTON,OUTPUT);      
+      pinMode(2,OUTPUT);      
            
       if (!game_started){             // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);  
+          digitalWrite(A0, HIGH);  
           tone(10, 600, 1000);  
           lcd.setCursor(0,1);
           lcd.print("K ");
@@ -418,28 +402,28 @@ void loop() {
           while(true){
             if ((millis() - false_start_moment) > 500){
               false_start_led = !false_start_led;
-              digitalWrite(RED_BUTTON, false_start_led);
+              digitalWrite(2, false_start_led);
               false_start_moment = millis();
             }
             
-            if (digitalRead(GAME_STOP_BUTTON) == LOW){
+            if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
       }
       }else{                            // красная кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);   // светодиод фальстарта
-        digitalWrite(RED_BUTTON,HIGH);     // сигнальный светодиод
+        digitalWrite(A1, HIGH);   // светодиод фальстарта
+        digitalWrite(2,HIGH);     // сигнальный светодиод
         tone(10, 800, 800);
         lcd.setCursor(0,1);
         lcd.print("K ");
         lcd.print(60-time_remaind);
         while(true){
-          if (digitalRead(GAME_STOP_BUTTON) == LOW){
+          if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
-          if (digitalRead(GAME_START_BUTTON) == LOW){
+          if (digitalRead(A2) == LOW){
             float time_remaind_backup = time_remaind;
             system_reset();
             time_remaind =  time_remaind_backup;
@@ -452,21 +436,21 @@ void loop() {
     }
 
 // желтая кнопка
-if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
+if (digitalRead(3) == HIGH && yellow_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
 
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(YELLOW_BUTTON,OUTPUT);     
+      pinMode(3,OUTPUT);     
       
       if (!game_started){               // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);    
+          digitalWrite(A0, HIGH);    
           tone(10, 600, 1000);
           lcd.setCursor(0,1);
           lcd.print(char(6));
@@ -480,28 +464,28 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
           while(true){
             if ((millis() - false_start_moment) > 500){
               false_start_led = !false_start_led;
-              digitalWrite(YELLOW_BUTTON, false_start_led);
+              digitalWrite(3, false_start_led);
               false_start_moment = millis();
             }
-            if (digitalRead(GAME_STOP_BUTTON) == LOW){
+            if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
       }
       }else{                          // желтая кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);
-        digitalWrite(YELLOW_BUTTON,HIGH);
+        digitalWrite(A1, HIGH);
+        digitalWrite(3,HIGH);
         tone(10,800, 800);
         lcd.setCursor(0,1);
         lcd.print(char(6));
         lcd.print(" ");
         lcd.print(60 - time_remaind);
         while(true){
-          if (digitalRead(GAME_STOP_BUTTON) == LOW){
+          if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
-          if (digitalRead(GAME_START_BUTTON) == LOW){
+          if (digitalRead(A2) == LOW){
             float time_remaind_backup = time_remaind;
             system_reset();
             time_remaind =  time_remaind_backup;
@@ -515,21 +499,21 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
 
 
 // зеленая кнопка
-    if (digitalRead(GREEN_BUTTON) == HIGH && green_pressable){
+    if (digitalRead(4) == HIGH && green_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
 
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(GREEN_BUTTON,OUTPUT);      
+      pinMode(4,OUTPUT);      
       
       if (!game_started){           // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);
+          digitalWrite(A0, HIGH);
           tone(10, 600, 1000);
           lcd.setCursor(0,1);
           lcd.print(char(7));
@@ -543,28 +527,28 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
           while(true){
             if ((millis() - false_start_moment) > 500){
               false_start_led = !false_start_led;
-              digitalWrite(GREEN_BUTTON, false_start_led);
+              digitalWrite(4, false_start_led);
               false_start_moment = millis();
             }
-            if (digitalRead(GAME_STOP_BUTTON) == LOW){
+            if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
       }
       }else{                        // зеленая кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);
-        digitalWrite(GREEN_BUTTON,HIGH);
+        digitalWrite(A1, HIGH);
+        digitalWrite(4,HIGH);
         tone(10, 800, 800);
         lcd.setCursor(0,1);
         lcd.print(char(7));
         lcd.print(" ");
         lcd.print(60 - time_remaind);
         while(true){
-          if (digitalRead(GAME_STOP_BUTTON) == LOW){
+          if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
-          if (digitalRead(GAME_START_BUTTON) == LOW){
+          if (digitalRead(A2) == LOW){
             float time_remaind_backup = time_remaind;
             system_reset();
             time_remaind =  time_remaind_backup;
@@ -578,21 +562,21 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
 
 
 // синяя кнопка
-    if (digitalRead(BLUE_BUTTON) == HIGH && blue_pressable){
+    if (digitalRead(5) == HIGH && blue_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
 
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(BLUE_BUTTON,OUTPUT);      
+      pinMode(5,OUTPUT);      
      
       if (!game_started){                 // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);   
+          digitalWrite(A0, HIGH);   
           tone(10, 600, 1000); 
           lcd.setCursor(0,1);          
           lcd.print("C ");
@@ -605,27 +589,27 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
           while(true){
             if ((millis() - false_start_moment) > 500){
               false_start_led = !false_start_led;
-              digitalWrite(BLUE_BUTTON, false_start_led);
+              digitalWrite(5, false_start_led);
               false_start_moment = millis();
             }
-            if (digitalRead(GAME_STOP_BUTTON) == LOW){
+            if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
       }
       }else{                              // синяя кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);
-        digitalWrite(BLUE_BUTTON,HIGH);
+        digitalWrite(A1, HIGH);
+        digitalWrite(5,HIGH);
         tone(10,800,800);
         lcd.setCursor(0,1);
         lcd.print("C ");
         lcd.print(60 - time_remaind);
         while(true){
-          if (digitalRead(GAME_STOP_BUTTON) == LOW){
+          if (digitalRead(A3) == LOW){
               system_reset();
               break;
             }
-          if (digitalRead(GAME_START_BUTTON) == LOW){
+          if (digitalRead(A2) == LOW){
             float time_remaind_backup = time_remaind;
             system_reset();
             time_remaind =  time_remaind_backup;
@@ -641,102 +625,102 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
   
 // СВОЯК С ПЕРЕОТБИВКАМИ
   if (game == 2){
-    if (digitalRead(RED_BUTTON) == HIGH && red_pressable){
+    if (digitalRead(2) == HIGH && red_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(RED_BUTTON, OUTPUT);
+      pinMode(2, OUTPUT);
      
-      digitalWrite(RED_BUTTON, HIGH);
+      digitalWrite(2, HIGH);
       tone(10, 800, 800);
       lcd.setCursor(2,1);
       lcd.print(char(0xFF));
       while(true){
-        if (digitalRead(GAME_STOP_BUTTON) == LOW){
+        if (digitalRead(A3) == LOW){
           system_reset();
           break;
         }
       }
     }
 
-    if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
+    if (digitalRead(3) == HIGH && yellow_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
 
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(YELLOW_BUTTON, OUTPUT);
+      pinMode(3, OUTPUT);
      
-      digitalWrite(YELLOW_BUTTON, HIGH);
+      digitalWrite(3, HIGH);
       
       tone(10, 800, 800);
       lcd.setCursor(6,1);
       lcd.print(char(0xFF));
       while(true){
-        if (digitalRead(GAME_STOP_BUTTON) == LOW){
+        if (digitalRead(A3) == LOW){
           system_reset();
           break;
         }
       }
     }
 
-    if (digitalRead(GREEN_BUTTON) == HIGH && green_pressable){
+    if (digitalRead(4) == HIGH && green_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
 
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(GREEN_BUTTON, OUTPUT);
+      pinMode(4, OUTPUT);
      
-      digitalWrite(GREEN_BUTTON, HIGH);
+      digitalWrite(4, HIGH);
       
       tone(10, 800, 800);
       lcd.setCursor(10,1);
       lcd.print(char(0xFF));
       while(true){
-        if (digitalRead(GAME_STOP_BUTTON) == LOW){
+        if (digitalRead(A3) == LOW){
           system_reset();
           break;
         }
       }
     }
 
-    if (digitalRead(BLUE_BUTTON) == HIGH && blue_pressable){
+    if (digitalRead(5) == HIGH && blue_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
 
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(BLUE_BUTTON, OUTPUT);
+      pinMode(5, OUTPUT);
       
-      digitalWrite(BLUE_BUTTON, HIGH);
+      digitalWrite(5, HIGH);
       
       tone(10, 800, 800);
       lcd.setCursor(14,1);
       lcd.print(char(0xFF));
       while(true){
-        if (digitalRead(GAME_STOP_BUTTON) == LOW){
+        if (digitalRead(A3) == LOW){
           system_reset();
           break;
         }
@@ -747,12 +731,12 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
 
   // СВОЯК БЕЗ ПЕРЕОТБИВОК
   if (game == 3){
-    if (digitalRead(RED_BUTTON) == HIGH && red_pressable){
+    if (digitalRead(2) == HIGH && red_pressable){
       red_pressable = false;   
         
-      pinMode(RED_BUTTON, OUTPUT);
-      digitalWrite(RED_SIGNAL_LED, LOW);
-      digitalWrite(RED_BUTTON, HIGH);
+      pinMode(2, OUTPUT);
+      digitalWrite(6, LOW);
+      digitalWrite(2, HIGH);
       
       tone(10, 800, 800);
       lcd.setCursor(2,1);
@@ -760,13 +744,13 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
       buttons_order += 1;
     }
 
-    if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
+    if (digitalRead(3) == HIGH && yellow_pressable){
      
       yellow_pressable = false;
       
-      pinMode(YELLOW_BUTTON, OUTPUT);
-      digitalWrite(YELLOW_SIGNAL_LED, LOW);
-      digitalWrite(YELLOW_BUTTON, HIGH);
+      pinMode(3, OUTPUT);
+      digitalWrite(7, LOW);
+      digitalWrite(3, HIGH);
       
       tone(10, 800, 800);
       lcd.setCursor(6,1);
@@ -774,13 +758,13 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
       buttons_order += 1;      
     }
 
-    if (digitalRead(GREEN_BUTTON) == HIGH && green_pressable){
+    if (digitalRead(4) == HIGH && green_pressable){
       
       green_pressable = false;  
           
-      pinMode(GREEN_BUTTON, OUTPUT);
-      digitalWrite(GREEN_SIGNAL_LED, LOW);
-      digitalWrite(GREEN_BUTTON, HIGH);
+      pinMode(4, OUTPUT);
+      digitalWrite(8, LOW);
+      digitalWrite(4, HIGH);
       
       tone(10, 800, 800);
       lcd.setCursor(10,1);
@@ -788,20 +772,20 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
       buttons_order += 1;     
     }
 
-    if (digitalRead(BLUE_BUTTON) == HIGH && blue_pressable){
+    if (digitalRead(5) == HIGH && blue_pressable){
      
       blue_pressable = false;
       
-      pinMode(BLUE_BUTTON, OUTPUT);
-      digitalWrite(BLUE_SIGNAL_LED, LOW);
-      digitalWrite(BLUE_BUTTON, HIGH);
+      pinMode(5, OUTPUT);
+      digitalWrite(9, LOW);
+      digitalWrite(5, HIGH);
       
       tone(10, 800, 800);
       lcd.setCursor(14,1);
       lcd.print(buttons_order);      
       buttons_order += 1;      
     }    
-    if (digitalRead(GAME_STOP_BUTTON) == LOW && (!red_pressable || !yellow_pressable || !green_pressable || !blue_pressable)){
+    if (digitalRead(A3) == LOW && (!red_pressable || !yellow_pressable || !green_pressable || !blue_pressable)){
       system_reset();
     }
   }
@@ -853,23 +837,23 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
     }
 
       // красная кнопка
-      if (digitalRead(RED_BUTTON) == HIGH && red_pressable){
+      if (digitalRead(2) == HIGH && red_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
 
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(RED_BUTTON, OUTPUT);
+      pinMode(2, OUTPUT);
      
-      digitalWrite(RED_BUTTON, HIGH);
+      digitalWrite(2, HIGH);
       
       if (!game_started){             // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);  
+          digitalWrite(A0, HIGH);  
           tone(10, 600, 1000);  
           lcd.setCursor(0,1);
           lcd.print("K ");
@@ -881,7 +865,7 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
           delay(5000);
           system_reset();
       }else{                            // красная кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);
+        digitalWrite(A1, HIGH);
         tone(10, 800, 800);
         lcd.setCursor(0,1);
         lcd.print("K ");
@@ -892,23 +876,23 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
     }
 
 // желтая кнопка
-if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
+if (digitalRead(3) == HIGH && yellow_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
       
-     digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+     digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
      
-     pinMode(YELLOW_BUTTON, OUTPUT);
+     pinMode(3, OUTPUT);
      
-      digitalWrite(YELLOW_BUTTON, HIGH);
+      digitalWrite(3, HIGH);
       
       if (!game_started){               // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);    
+          digitalWrite(A0, HIGH);    
           tone(10, 600, 1000);
           lcd.setCursor(0,1);
           lcd.print(char(6));
@@ -921,7 +905,7 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
           delay(5000);
           system_reset();
       }else{                          // желтая кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);
+        digitalWrite(A1, HIGH);
         tone(10,800, 800);
         lcd.setCursor(0,1);
         lcd.print(char(6));
@@ -934,23 +918,23 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
 
 
 // зеленая кнопка
-    if (digitalRead(GREEN_BUTTON) == HIGH && green_pressable){
+    if (digitalRead(4) == HIGH && green_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
       
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
      
-     pinMode(GREEN_BUTTON, OUTPUT);
+     pinMode(4, OUTPUT);
      
-      digitalWrite(GREEN_BUTTON, HIGH);
+      digitalWrite(4, HIGH);
       
       if (!game_started){           // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);
+          digitalWrite(A0, HIGH);
           tone(10, 600, 1000);
           lcd.setCursor(0,1);
           lcd.print(char(7));
@@ -963,7 +947,7 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
           delay(5000);
           system_reset();
       }else{                        // зеленая кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);
+        digitalWrite(A1, HIGH);
         tone(10, 800, 800);
         lcd.setCursor(0,1);
         lcd.print(char(7));
@@ -975,23 +959,23 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
     }
 
 // синяя кнопка
-    if (digitalRead(BLUE_BUTTON) == HIGH && blue_pressable){
+    if (digitalRead(5) == HIGH && blue_pressable){
       red_pressable = false;
       yellow_pressable = false;
       green_pressable = false;
       blue_pressable = false;
       
-      digitalWrite(RED_SIGNAL_LED,LOW);
-      digitalWrite(YELLOW_SIGNAL_LED,LOW);
-      digitalWrite(GREEN_SIGNAL_LED,LOW);
-      digitalWrite(BLUE_SIGNAL_LED,LOW);
+      digitalWrite(6,LOW);
+      digitalWrite(7,LOW);
+      digitalWrite(8,LOW);
+      digitalWrite(9,LOW);
       
-      pinMode(BLUE_BUTTON, OUTPUT);
+      pinMode(5, OUTPUT);
       
-      digitalWrite(BLUE_BUTTON, HIGH);
+      digitalWrite(5, HIGH);
       
       if (!game_started){                 // случай фальстарта
-          digitalWrite(FALSE_START_LED, HIGH);   
+          digitalWrite(A0, HIGH);   
           tone(10, 600, 1000); 
           lcd.setCursor(0,1);          
           lcd.print("C ");
@@ -1003,7 +987,7 @@ if (digitalRead(YELLOW_BUTTON) == HIGH && yellow_pressable){
           delay(5000);
           system_reset();
       }else{                              // синяя кнопка без фальстарта
-        digitalWrite(NO_FALSE_START_LED, HIGH);
+        digitalWrite(A1, HIGH);
         tone(10,800,800);
         lcd.setCursor(0,1);
         lcd.print("C ");
